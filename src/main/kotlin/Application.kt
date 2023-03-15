@@ -149,18 +149,18 @@ fun Application.aart() {
         }
 
 
-        get<Worlds.World.Pictures> {
-            val directory = File(WORLDS_DIRECTORY, it.world.name).takeIfExists()
+        get<Pictures> {
+            val directory = File(WORLDS_DIRECTORY, it.worldName).takeIfExists()
                 ?: return@get call.respond(HttpStatusCode.NotFound)
             val picturesDirectory = File(directory, PICTURES_DIRECTORY_NAME)
             call.respond(message = picturesDirectory.nameOfFiles())
         }
-        delete<Worlds.World.Pictures> {
-            File(WORLDS_DIRECTORY, it.world.name, PICTURES_DIRECTORY_NAME).takeIfExists()?.deleteRecursively()
+        delete<Pictures> {
+            File(WORLDS_DIRECTORY, it.worldName, PICTURES_DIRECTORY_NAME).takeIfExists()?.deleteRecursively()
             call.respond(HttpStatusCode.OK)
         }
-        post<Worlds.World.Pictures> {
-            val pictureDirectory = File(WORLDS_DIRECTORY, it.world.name, PICTURES_DIRECTORY_NAME)
+        post<Pictures> {
+            val pictureDirectory = File(WORLDS_DIRECTORY, it.worldName, PICTURES_DIRECTORY_NAME)
             withContext(Dispatchers.IO) {
                 pictureDirectory.addFile(
                     fileName = pictureDirectory.generateUniqueFileName(call.request.fileExtension()),
@@ -171,13 +171,13 @@ fun Application.aart() {
         }
 
 
-        delete<Worlds.World.Pictures.Picture> {
-            File(WORLDS_DIRECTORY, it.pictures.world.name, PICTURES_DIRECTORY_NAME, it.fileName).takeIfExists()?.delete()
+        delete<Pictures.Picture> {
+            File(WORLDS_DIRECTORY, it.pictures.worldName, PICTURES_DIRECTORY_NAME, it.fileName).takeIfExists()?.delete()
             call.respond(HttpStatusCode.OK)
         }
-        post<Worlds.World.Pictures.Picture> {
+        post<Pictures.Picture> {
             withContext(Dispatchers.IO) {
-                File(WORLDS_DIRECTORY, it.pictures.world.name, PICTURES_DIRECTORY_NAME).addFile(
+                File(WORLDS_DIRECTORY, it.pictures.worldName, PICTURES_DIRECTORY_NAME).addFile(
                     fileName = it.fileName,
                     inputStream = call.receiveStream()
                 )
@@ -197,12 +197,13 @@ class Worlds {
         @Serializable
         @Resource("{fileName}")
         class File(val fileName: String, val world: World)
-        @Serializable
-        @Resource("pictures")
-        class Pictures(val world: World) {
-            @Serializable
-            @Resource("{fileName}")
-            class Picture(val fileName: String, val pictures: Pictures)
-        }
     }
+}
+
+@Serializable
+@Resource("pictures/{worldName}")
+class Pictures(val worldName: String) {
+    @Serializable
+    @Resource("{fileName}")
+    class Picture(val fileName: String, val pictures: Pictures)
 }
