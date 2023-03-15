@@ -29,7 +29,12 @@ const val PICTURES_DIRECTORY_NAME = "pictures"
 
 fun main() {
     WORLDS_DIRECTORY.mkdirs()
-    embeddedServer(Netty, host = "localhost", port = 8080, module = Application::aart).start(wait = true)
+    embeddedServer(
+        factory =  Netty,
+        host = System.getenv("HOST"),
+        port = System.getenv("PORT").toInt(),
+        module = Application::aart
+    ).start(wait = true)
 }
 
 fun File.uniqueName(gen: () -> String): String {
