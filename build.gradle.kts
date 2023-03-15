@@ -12,7 +12,7 @@ plugins {
 }
 
 application {
-    mainClass.set("MainKt")
+    mainClass.set("ApplicationKt")
 }
 
 group = "org.example"
