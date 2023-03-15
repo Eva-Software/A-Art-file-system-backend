@@ -69,7 +69,7 @@ fun File.addFile(fileName: String, inputStream: InputStream) {
     }
 }
 
-fun File(src: File, vararg names: String): File = File(src, names.joinToString("\\"))
+fun File(src: File, vararg names: String): File = File(src, names.joinToString(File.pathSeparator))
 
 fun ApplicationRequest.fileExtension(): String = contentType().contentSubtype
 
